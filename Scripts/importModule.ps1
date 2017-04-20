@@ -7,7 +7,8 @@ Param(
 	[Parameter(Mandatory=$true)]
     [string] $moduleVersion,
 	[string] $moduleAutomationAccountName = "tasmaniantradersautomation",
-	[string] $moduleResourceGroup = "tt-automation"
+	[string] $moduleResourceGroup = "tt-automation",
+	[bool] $Force = $false
 )
 
 Function Import-DscModule ($moduleName, $moduleVersion, $moduleAutomationAccountName, $moduleResourceGroup)
