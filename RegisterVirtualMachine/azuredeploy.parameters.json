@@ -6,7 +6,7 @@
             "value": "myVM001"
         },
         "modulesUrl": {
-            "value": "https://github.com/Azure/azure-quickstart-templates/raw/master/dsc-extension-azure-automation-pullserver/UpdateLCMforAAPull.zip"
+            "value": "https://github.com/kvaes/TasmanianTraders-IaC-AzureAutomationDSC/raw/master/RegisterVirtualMachine/UpdateLCMforAAPull.zip?raw=true"
         },
         "configurationFunction": {
             "value": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull"
