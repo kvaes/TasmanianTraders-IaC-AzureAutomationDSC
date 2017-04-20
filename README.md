@@ -11,13 +11,15 @@ There are several subdirectories ;
   * importAllConfiguration ; This will import all the configurations present in the "Configurations" directory
 
 # Scripts Examples
-.\importModule.ps1 -moduleName xActiveDirectory -moduleVersion "2.13.0"
-.\importModule.ps1 -moduleName xDSCDomainjoin -moduleVersion "1.1"
 
-.\importConfiguration.ps1 -dscConfigFile ..\Configurations\DscConfDomainController.ps1 -dscDataConfigFile ..\Configurations\DscConfDomainController-ConfigData.ps1
-.\importConfiguration.ps1 -dscConfigFile ..\Configurations\DscConfDomainController.ps1 -dscDataConfigFile ..\Configurations\DscConfDomainController-ConfigData.ps1 -dscAutomationAccount MyAutomationAccount -dscResourceGroup RG-AutomationAccount
-.\importConfiguration.ps1 -dscConfigFile ..\Configurations\DscConfDomainController.ps1 -dscDataConfigFile ..\Configurations\DscConfDomainController-ConfigData.ps1 -Force $true
-
-.\importAllConfigurations.ps1 
-.\importAllConfigurations.ps1 -dscAutomationAccount MyAutomationAccount -dscResourceGroup RG-AutomationAccount
-.\importAllConfigurations.ps1 -Force $true
+* importModule
+  * importModule.ps1 -moduleName xActiveDirectory -moduleVersion "2.13.0"
+  * importModule.ps1 -moduleName xDSCDomainjoin -moduleVersion "1.1"
+* importConfiguration
+  * importConfiguration.ps1 -dscConfigFile ..\Configurations\DscConfDomainController.ps1 -dscDataConfigFile ..\Configurations\DscConfDomainController-ConfigData.ps1
+  * importConfiguration.ps1 -dscConfigFile ..\Configurations\DscConfDomainController.ps1 -dscDataConfigFile ..\Configurations\DscConfDomainController-ConfigData.ps1 -dscAutomationAccount MyAutomationAccount -dscResourceGroup RG-AutomationAccount
+  * importConfiguration.ps1 -dscConfigFile ..\Configurations\DscConfDomainController.ps1 -dscDataConfigFile ..\Configurations\DscConfDomainController-ConfigData.ps1 -Force $true
+* importAllConfigurations
+  * importAllConfigurations.ps1 
+  * importAllConfigurations.ps1 -dscAutomationAccount MyAutomationAccount -dscResourceGroup RG-AutomationAccount
+  * importAllConfigurations.ps1 -Force $true
