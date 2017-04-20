@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schemas.microsoft.org/azure/deploymentTemplate?api-version=2015-01-01-preview#",
+    "$schema": "http://schemas.microsoft.org/azure/deploymentTemplate?api-version=2015-01-01#",
     "contentVersion": "1.0",
     "parameters": {
         "adAdminUsername": {
@@ -13,20 +13,29 @@
             "metadata": {
                 "description": "The password for the Azure Automation credential."
             }
+        },
+        "adDomainName": {
+            "type": "string",
+            "metadata": {
+                "description": "The domain name used for the AD domain user."
+            }
         }
     },
     "variables": {
         "sku": "Free",
         "accountName": "tasmaniantradersautomation",
-        "adAdminCedentialName": "addcAdmin",
+        "adAdminCedentialName": "addcDomainAdmin",
         "adAdminUsername": "[parameters('adAdminUsername')]",
         "adAdminPassword": "[parameters('adAdminPassword')]",
+        "adDomainVariableName":"addcDomainName",
+        "adDomainName":"[parameters('adDomainName')]",
+        "adDomainDescription":"The domain name"
     },
     "resources": [
       {
         "name": "[variables('accountName')]",
         "type": "Microsoft.Automation/automationAccounts",
-        "apiVersion": "2015-01-01-preview",
+        "apiVersion": "2015-10-31",
         "location": "[resourceGroup().location]",
         "dependsOn": [ ],
         "tags": { },
@@ -39,7 +48,7 @@
           {
             "name": "[variables('adAdminCedentialName')]",
             "type": "credentials",
-            "apiVersion": "2015-01-01-preview",
+            "apiVersion": "2015-10-31",
             "location": "[resourceGroup().location]",
             "dependsOn": [
               "[concat('Microsoft.Automation/automationAccounts/', variables('accountName'))]"
@@ -48,6 +57,22 @@
             "properties": {
               "userName": "[variables('adAdminUsername')]",
               "password": "[variables('adAdminPassword')]"
+            }
+          },
+          {
+            "name": "[variables('adDomainVariableName')]",
+            "type": "variables",
+            "apiVersion": "2015-10-31",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+              "[concat('Microsoft.Automation/automationAccounts/', variables('accountName'))]"
+            ],
+            "tags": { },
+            "properties": {
+              "isEncrypted": false,
+              "type": "String",
+              "value": "[concat('\"',variables('adDomainName'),'\"')]",
+              "description": "[variables('adDomainDescription')]"
             }
           }
         ]
