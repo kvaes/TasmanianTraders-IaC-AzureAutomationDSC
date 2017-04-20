@@ -19,6 +19,12 @@
             "metadata": {
                 "description": "The domain name used for the AD domain user."
             }
+        },
+        "adDomainNetbiosName": {
+            "type": "string",
+            "metadata": {
+                "description": "The netbios name used for the AD domain."
+            }
         }
     },
     "variables": {
@@ -29,7 +35,10 @@
         "adAdminPassword": "[parameters('adAdminPassword')]",
         "adDomainVariableName":"addcDomainName",
         "adDomainName":"[parameters('adDomainName')]",
-        "adDomainDescription":"The domain name"
+        "adDomainDescription":"The domain name",
+        "adDomainNetbiosVariableName":"addcNetbiosDomainName",
+        "adDomainNetbiosName":"[parameters('adDomainNetbiosName')]",
+        "adDomainNetbiosDescription":"The netbios name for the domain"
     },
     "resources": [
       {
@@ -73,6 +82,22 @@
               "type": "String",
               "value": "[concat('\"',variables('adDomainName'),'\"')]",
               "description": "[variables('adDomainDescription')]"
+            }
+          },
+          {
+            "name": "[variables('adDomainNetbiosVariableName')]",
+            "type": "variables",
+            "apiVersion": "2015-10-31",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+              "[concat('Microsoft.Automation/automationAccounts/', variables('accountName'))]"
+            ],
+            "tags": { },
+            "properties": {
+              "isEncrypted": false,
+              "type": "String",
+              "value": "[concat('\"',variables('adDomainNetbiosName'),'\"')]",
+              "description": "[variables('adDomainNetbiosDescription')]"
             }
           }
         ]
