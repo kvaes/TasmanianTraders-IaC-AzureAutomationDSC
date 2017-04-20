@@ -37,7 +37,7 @@
         },
         "resources": [
           {
-            "name": "[parameters('credentialName')]",
+            "name": "[variables('adAdminCedentialName')]",
             "type": "credentials",
             "apiVersion": "2015-01-01-preview",
             "location": "[resourceGroup().location]",
