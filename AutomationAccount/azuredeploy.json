@@ -36,7 +36,7 @@
         "adDomainVariableName":"addcDomainName",
         "adDomainName":"[parameters('adDomainName')]",
         "adDomainDescription":"The domain name",
-        "adDomainNetbiosVariableName":"addcNetbiosDomainName",
+        "adDomainNetbiosVariableName":"addcDomainNetbiosName",
         "adDomainNetbiosName":"[parameters('adDomainNetbiosName')]",
         "adDomainNetbiosDescription":"The netbios name for the domain"
     },
