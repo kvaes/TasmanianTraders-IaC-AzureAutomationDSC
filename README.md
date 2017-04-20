@@ -7,6 +7,7 @@ There are several subdirectories ;
 * Configurations ; This contains the DSC configurations and their companion config data.
 * Scripts ; Here you can find the scripts you can use to deploy.
   * importModule ; This will import a DSC module from the powershell gallery and into your automation account
+  * importAllModules ; This will import all the modules presented inthe "Modules" directory (filtered on the pattern "Modules" in the file name)
   * importConfiguration ; This will import a configuration & compile it
   * importAllConfiguration ; This will import all the configurations present in the "Configurations" directory
 
@@ -15,6 +16,9 @@ There are several subdirectories ;
 * importModule
   * importModule.ps1 -moduleName xActiveDirectory -moduleVersion "2.13.0"
   * importModule.ps1 -moduleName xDSCDomainjoin -moduleVersion "1.1"
+* importAllModules
+  * importAllModules.ps1 
+  * importAllModules.ps1 -moduleAutomationAccount MyAutomationAccount -moduleResourceGroup RG-AutomationAccount
 * importConfiguration
   * importConfiguration.ps1 -dscConfigFile ..\Configurations\DscConfDomainController.ps1 -dscDataConfigFile ..\Configurations\DscConfDomainController-ConfigData.ps1
   * importConfiguration.ps1 -dscConfigFile ..\Configurations\DscConfDomainController.ps1 -dscDataConfigFile ..\Configurations\DscConfDomainController-ConfigData.ps1 -dscAutomationAccount MyAutomationAccount -dscResourceGroup RG-AutomationAccount
