@@ -7,21 +7,21 @@ Param(
 	[Parameter(Mandatory=$true)]
     [string] $dscDataConfigFile,
 	[string] $dscAutomationAccount = "tasmaniantradersautomation",
-	[string] $dscResourceGroup = "tt-automation"
+	[string] $dscResourceGroup = "tt-automation",
+	[bool] $Force = $false
 )
 
 Function Import-DscConfiguration ($dscConfigFile, $dscDataConfigFile, $dscAutomationAccount, $dscResourceGroup) {
-
 	$dscConfigFileFull = (Get-Item $dscConfigFile).FullName
 	$dscDataConfigFileFull = (Get-Item $dscDataConfigFile).FullName
 	$dscConfigFileName = [io.path]::GetFileNameWithoutExtension($dscConfigFile)
 	$dscDataConfigFileName = [io.path]::GetFileNameWithoutExtension($dscDataConfigFile)
 	$dsc = Get-AzureRmAutomationDscConfiguration -ResourceGroupName $dscResourceGroup -AutomationAccountName $dscAutomationAccount -Name $dscConfigFileName -erroraction 'silentlycontinue'
-	if ($dsc) { 
+	if ($dsc -and !$Force) { 
 		Write-Information -MessageData  "Configuration $dscConfigFileName Already Exists"
 	} else {
 		Write-Information -MessageData  "Importing & compiling configuration $dscConfigFileName with config data $dscDataConfigFileName"
-		Import-AzureRmAutomationDscConfiguration -AutomationAccountName $dscAutomationAccount -ResourceGroupName $dscResourceGroup -Published -SourcePath $dscConfigFileFull
+		Import-AzureRmAutomationDscConfiguration -AutomationAccountName $dscAutomationAccount -ResourceGroupName $dscResourceGroup -Published -SourcePath $dscConfigFileFull -Force
         $dscDataConfigFileFullContent = (Get-Content $dscDataConfigFileFull | Out-String)
         Invoke-Expression $dscDataConfigFileFullContent
 		$CompilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $dscResourceGroup -AutomationAccountName $dscAutomationAccount -ConfigurationName $dscConfigFileName -ConfigurationData $ConfigData
