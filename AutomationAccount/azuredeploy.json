@@ -1,0 +1,57 @@
+{
+    "$schema": "http://schemas.microsoft.org/azure/deploymentTemplate?api-version=2015-01-01-preview#",
+    "contentVersion": "1.0",
+    "parameters": {
+        "adAdminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "The username for the Azure Automation credential."
+            }
+        },
+        "adAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password for the Azure Automation credential."
+            }
+        }
+    },
+    "variables": {
+        "sku": "Free",
+        "accountName": "tasmaniantradersautomation",
+        "adAdminCedentialName": "addcAdmin",
+        "adAdminUsername": "[parameters('adAdminUsername')]",
+        "adAdminPassword": "[parameters('adAdminPassword')]",
+    },
+    "resources": [
+      {
+        "name": "[variables('accountName')]",
+        "type": "Microsoft.Automation/automationAccounts",
+        "apiVersion": "2015-01-01-preview",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [ ],
+        "tags": { },
+        "properties": {
+          "sku": {
+            "name": "[variables('sku')]"
+          }
+        },
+        "resources": [
+          {
+            "name": "[parameters('credentialName')]",
+            "type": "credentials",
+            "apiVersion": "2015-01-01-preview",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+              "[concat('Microsoft.Automation/automationAccounts/', variables('accountName'))]"
+            ],
+            "tags": { },
+            "properties": {
+              "userName": "[variables('adAdminUsername')]",
+              "password": "[variables('adAdminPassword')]"
+            }
+          }
+        ]
+      }
+    ],
+    "outputs": {}
+}

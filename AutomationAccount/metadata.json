@@ -1,0 +1,7 @@
+{
+  "itemDisplayName": "Creates an Azure Automation Account with one credential",
+  "description": "This template creates an Azure Automation Account with one credential.",
+  "summary": "This template creates an Azure Automation Account with one credential.",
+  "githubUsername": "kvaes",
+  "dateUpdated": "2017-04-20"
+}
