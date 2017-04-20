@@ -2,7 +2,9 @@
 #Requires -Module AzureRM.Resources
 
 Param(
+	[Parameter(Mandatory=$true)]
     [string] $moduleName,
+	[Parameter(Mandatory=$true)]
     [string] $moduleVersion,
 	[string] $moduleAutomationAccountName = "tasmaniantradersautomation",
 	[string] $moduleResourceGroup = "tt-automation"

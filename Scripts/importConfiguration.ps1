@@ -2,7 +2,9 @@
 #Requires -Module AzureRM.Resources
 
 Param(
+	[Parameter(Mandatory=$true)]
     [string] $dscConfigFile,
+	[Parameter(Mandatory=$true)]
     [string] $dscDataConfigFile,
 	[string] $dscAutomationAccount = "tasmaniantradersautomation",
 	[string] $dscResourceGroup = "tt-automation"
