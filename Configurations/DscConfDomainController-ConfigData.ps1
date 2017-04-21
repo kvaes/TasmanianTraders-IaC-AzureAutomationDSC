@@ -1,7 +1,12 @@
 ﻿$ConfigData = @{
     AllNodes = @(
         @{
-            NodeName = "DomainController"
+            NodeName = "FirstDC"
+            PSDscAllowPlainTextPassword = $True
+			PSDscAllowDomainUser = $True
+        },
+        @{
+            NodeName = "AdditionalDC"
             PSDscAllowPlainTextPassword = $True
 			PSDscAllowDomainUser = $True
         }

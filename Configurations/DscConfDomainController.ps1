@@ -6,7 +6,7 @@ Configuration DscConfDomainController
     $dscDomainNetbiosName = Get-AutomationVariable -Name 'addcDomainNetbiosName'
 	$dscSafeModePassword = $dscDomainAdmin
 
-    node $AllNodes.NodeName
+    node FirstDC
     {
 
 	    WindowsFeature DNS 
@@ -67,6 +67,31 @@ Configuration DscConfDomainController
             SysvolPath = "F:\SYSVOL"
 	        DependsOn = "[xDisk]ADDataDisk"
         } 
-    }        
+    }      
+
+    
+    node AdditionalDC
+    {
+		WindowsFeature ADDSInstall 
+        { 
+            Ensure = "Present" 
+            Name = "AD-Domain-Services" 
+        } 
+        xWaitForADDomain DscForestWait 
+        { 
+            DomainName = $dscDomainName
+            DomainUserCredential = $dscDomainAdmin 
+            RetryCount =  1440
+            RetryIntervalSec = 60
+            DependsOn = "[WindowsFeature]ADDSInstall" 
+        } 
+        xADDomainController SecondDC
+        {
+            DomainName = $dscDomainName
+            DomainAdministratorCredential = $dscDomainAdmin
+            SafemodeAdministratorPassword = $dscSafeModePassword
+			DependsOn = "[xWaitForADDomain]DscForestWait" 
+        }
+    }     
 
 }
