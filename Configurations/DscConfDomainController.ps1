@@ -6,6 +6,7 @@ Configuration DscConfDomainController
     $dscDomainNetbiosName = Get-AutomationVariable -Name 'addcDomainNetbiosName'
 	$dscSafeModePassword = $dscDomainAdmin
 	$DomainRoot = "DC=$($dscDomainAdmin -replace '\.',',DC=')"
+	$dscDomainJoinAdmin = new-object -typename System.Management.Automation.PSCredential -argumentlist "$dscDomainName\$dscDomainAdmin", $dscDomainAdmin.Password
 
     node FirstDC
     {
@@ -79,15 +80,10 @@ Configuration DscConfDomainController
             DependsOn = "[xADDomain]FirstDS" 
         } 
 		
-		xADGroup FirstUserAddToAdmins
-		{
-			GroupName = "G_$RootOU"
-			GroupScope = 'Global'
-			Description = "Designated administrators of the domain"
-			Category = 'Security'
-			Members = $dscDomainAdmin.Username 
-			Path = "OU=Users,$DomainRoot"
-			Ensure = 'Present'
+        xADGroup DomainAdmins
+        {
+            GroupName = 'Domain Admins'
+            MembersToInclude = $dscDomainAdmin.Username
 			DependsOn = "[xADUser]FirstUser" 
 		}
     }      
@@ -147,7 +143,7 @@ Configuration DscConfDomainController
         xDSCDomainjoin JoinDomain
 		{
 			Domain = $dscDomainName 
-			Credential = $dscDomainAdmin
+			Credential = $dscDomainJoinAdmin
 			DependsOn = "[xDisk]ADDataDisk"
 		}
 		
