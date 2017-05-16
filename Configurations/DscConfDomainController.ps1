@@ -6,7 +6,8 @@ Configuration DscConfDomainController
     $dscDomainNetbiosName = Get-AutomationVariable -Name 'addcDomainNetbiosName'
 	$dscSafeModePassword = $dscDomainAdmin
 	$DomainRoot = "DC=$($dscDomainAdmin -replace '\.',',DC=')"
-	$dscDomainJoinAdmin = new-object -typename System.Management.Automation.PSCredential -argumentlist "$dscDomainName\$dscDomainAdmin", $dscDomainAdmin.Password
+	$dscDomainJoinAdminUsername = $dscDomainAdmin.UserName
+	$dscDomainJoinAdmin = new-object -typename System.Management.Automation.PSCredential -argumentlist "$dscDomainName\$dscDomainJoinAdminUsername", $dscDomainAdmin.Password
 
     node FirstDC
     {
@@ -140,22 +141,24 @@ Configuration DscConfDomainController
             DependsOn = "[WindowsFeature]ADDSInstall"
         }
 		
-        xDSCDomainjoin JoinDomain
-		{
-			Domain = $dscDomainName 
-			Credential = $dscDomainJoinAdmin
-			DependsOn = "[xDisk]ADDataDisk"
-		}
+		xWaitForADDomain DscForestWait
+        {
+            DomainName = $dscDomainName
+            DomainUserCredential = $dscDomainAdmin
+            RetryCount = 15
+            RetryIntervalSec = 60
+            DependsOn = "[xDisk]ADDataDisk"
+        }
 		
         xADDomainController SecondDC
         {
             DomainName = $dscDomainName
-            DomainAdministratorCredential = $dscDomainAdmin
-            SafemodeAdministratorPassword = $dscSafeModePassword
+            DomainAdministratorCredential = $dscDomainJoinAdmin
+            SafemodeAdministratorPassword = $dscDomainJoinAdmin
 			DatabasePath = "F:\NTDS"
             LogPath = "F:\NTDS"
             SysvolPath = "F:\SYSVOL"
-			DependsOn = "[xDSCDomainjoin]JoinDomain" 
+			DependsOn = "[xWaitForADDomain]DscForestWait" 
         }
     }     
 
