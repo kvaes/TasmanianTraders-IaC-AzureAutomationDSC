@@ -9,8 +9,17 @@ Configuration DscConfSqlServer
 	$dscDomainJoinAdminUsername = $dscDomainAdmin.UserName
 	$dscDomainJoinAdmin = new-object -typename System.Management.Automation.PSCredential -argumentlist "$dscDomainName\$dscDomainJoinAdminUsername", $dscDomainAdmin.Password
 	
-	$DatabaseEnginePort1 = 1433
 	$dscSqlService = Get-AutomationPSCredential -Name 'sqlService'
+	$sqlInstancePort = 65000
+	$sqlInstanceDir = "D:\MSSQL\Inst"
+	$sqlDataDir = "F:\MSSQL\Dat"
+	$sqlLogDir = "F:\MSSQL\Log"
+	$sqlTempDir = "F:\MSSQL\Tmp"
+	$sqlBackupDir = "F:\MSSQL\Bck"
+	$sqlInstanceFeatures = "SQLENGINE,FULLTEXT,RS,AS,IS"
+	$sqlInstanceName = "MyInstance"
+	$sqlSourcePath = "C:\SQLServer_13.0_Full"
+	$sqlAdminAccount = "$dscDomainName\$dscDomainJoinAdminUsername"
 	
     node Standalone
     {
@@ -44,6 +53,7 @@ Configuration DscConfSqlServer
 			DependsOn = "[xWaitForADDomain]DscForestWait"
         }
 
+		<#
         xFirewall DatabaseEngineFirewallRule1
         {
             Direction = "Inbound"
@@ -53,52 +63,68 @@ Configuration DscConfSqlServer
             Group = "SQL Server"
             Enabled = "True"
             Protocol = "TCP"
-            LocalPort = $DatabaseEnginePort1
+            LocalPort = $sqlInstancePort
             Ensure = "Present"
         }
-
-        xSqlLogin AddDomainAdminAccountToSysadminServerRole
+		#>
+		
+		WindowsFeature ADDSTools
         {
-            Name = $dscDomainAdmin.UserName
-            LoginType = "WindowsUser"
-            ServerRoles = "sysadmin"
-            Enabled = $true
-            Credential = $dscDomainAdmin
-			DependsOn = "[xDSCDomainjoin]JoinDomain"
+            Ensure = "Present"
+            Name = "RSAT-ADDS-Tools"
+            DependsOn = "[xDSCDomainjoin]JoinDomain"
         }
 
+		<#
         xADUser CreateSqlServerServiceAccount
         {
             DomainAdministratorCredential = $dscDomainAdmin
             DomainName = $dscDomainName
-            UserName = $sqlService.UserName
-            Password = $sqlService
+            UserName = $dscSqlService.UserName
+            Password = $dscSqlService
             Ensure = "Present"
-            DependsOn = "[xSqlLogin]AddDomainAdminAccountToSysadminServerRole"
+            DependsOn = "[WindowsFeature]ADDSTools"
         }
-
-        xSqlLogin AddSqlServerServiceAccountToSysadminServerRole
-        {
-            Name = $sqlService.UserName
-            LoginType = "WindowsUser"
-            ServerRoles = "sysadmin"
-            Enabled = $true
-            Credential = $dscDomainAdmin
-            DependsOn = "[xADUser]CreateSqlServerServiceAccount"
+		#>
+		
+		WindowsFeature "NET-Framework-Core"
+		{
+			Ensure = "Present"
+			Name = "NET-Framework-Core"
+			DependsOn = "[WindowsFeature]ADDSTools"			
         }
+		
+		xSqlServerSetup SQLserverSetup
+		{
+			DependsOn = "[WindowsFeature]NET-Framework-Core"
+			SourcePath = $sqlSourcePath
+			SetupCredential = $dscDomainAdmin
+			InstanceName = $sqlInstanceName
+			Features = $sqlInstanceFeatures
+			SQLSysAdminAccounts = $sqlAdminAccount
+			InstallSharedDir = "C:\Program Files\Microsoft SQL Server"
+			InstallSharedWOWDir = "C:\Program Files (x86)\Microsoft SQL Server"
+			InstanceDir = "$sqlInstanceDir"
+			InstallSQLDataDir = "$sqlDataDir"
+			SQLUserDBDir = "$sqlDataDir"
+			SQLUserDBLogDir = "$sqlLogDir"
+			SQLTempDBDir = "$sqlTempDir"
+			SQLTempDBLogDir = "$sqlTempDir"
+			SQLBackupDir = "$sqlBackupDir"
+			ASDataDir = "F:\Program Files\Microsoft SQL Server\MSAS11.MSSQLSERVER\OLAP\Data"
+			ASLogDir = "F:\Program Files\Microsoft SQL Server\MSAS11.MSSQLSERVER\OLAP\Log"
+			ASBackupDir = "F:\Program Files\Microsoft SQL Server\MSAS11.MSSQLSERVER\OLAP\Backup"
+			ASTempDir = "F:\Program Files\Microsoft SQL Server\MSAS11.MSSQLSERVER\OLAP\Temp"
+			ASConfigDir = "F:\Program Files\Microsoft SQL Server\MSAS11.MSSQLSERVER\OLAP\Config"
+		}
 
-        xSqlServer ConfigureSqlServerWithAlwaysOn
-        {
-            InstanceName = $env:COMPUTERNAME
-            SqlAdministratorCredential = $dscDomainAdmin
-            ServiceCredential = $sqlService
-            MaxDegreeOfParallelism = 1
-            FilePath = "F:\DATA"
-            LogPath = "F:\LOG"
-            DomainAdministratorCredential = $dscDomainJoinAdmin
-            DependsOn = "[xSqlLogin]AddSqlServerServiceAccountToSysadminServerRole"
-        }
-
+		xSqlServerFirewall SQLserverFirewall
+		{
+			DependsOn = "[xSqlServerSetup]SQLserverSetup"
+			SourcePath = $sqlSourcePath
+			InstanceName = $sqlInstanceName
+			Features = $sqlInstanceFeatures
+		}
     }     
 
 }
